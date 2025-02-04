@@ -1,0 +1,29 @@
+{%extends 'base.html'%}
+
+{%block main_block%}
+<div class="mt-20">
+
+    <h1>Course Details</h1>
+    <p><h2>Title: </h2>{{course.title}}</p>
+    <p><h3>Description: </h3>{{course.description}}</p>
+    <p><h3>Price: </h3>{{course.price}}</p>
+    <p><h3>Instructor: </h3>{{course.owner}}</p>
+
+
+    <hr>
+    <div>
+        <h1>Modules</h1>
+        {%for module in course.modules.all%}
+        <h2>{{module.order}} Module Title: {{module.title}}</h2>
+        {%for l in module.lessons.all%}
+        <h2>{{l.order}} Lesson Title: {{l.title}}</h2>
+        {%endfor%}
+        {%endfor%}
+
+    </div>
+</div>
+
+
+
+
+{%endblock%}
