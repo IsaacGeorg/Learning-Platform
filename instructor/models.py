@@ -86,7 +86,7 @@ class Module(models.Model):
     def save(self, *args,**kwargs):
         max_order=Module.objects.filter(course_object=self.course_object).aggregate(max=Max("order")).get("max") or 0
         self.order=max_order+1
-        super.save(*args,**kwargs)
+        super().save(*args,**kwargs)
 
 
     class Meta:
@@ -114,8 +114,18 @@ class Lesson(models.Model):
     def save(self,*args,**kwargs):
         max_order=Lesson.objects.filter(module_object=self.module_object).aggregate(max=Max("order")).get("max") or 0
         self.order=max_order+1
-        super.save(*args,**kwargs)
+        super().save(*args,**kwargs)
 
 
     class Meta:
         ordering=["order"]
+
+
+
+class Cart(models.Model):
+    course_object=models.ForeignKey(Course,on_delete=models.CASCADE)
+    user=models.ForeignKey(User,on_delete=models.CASCADE,related_name="basket")
+    created_date=models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.course_object.title
