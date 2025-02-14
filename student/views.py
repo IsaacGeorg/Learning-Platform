@@ -1,7 +1,7 @@
 from django.shortcuts import render,redirect
 from django.views.generic import View, FormView, CreateView, TemplateView
 from student.forms import StudentCreateForm, StudentSignInForm
-from instructor.models import Cart
+from instructor.models import Cart, Module, Lesson
 
 from django.urls import reverse_lazy
 from django.contrib.auth import authenticate,login
@@ -57,8 +57,10 @@ class StudentSignInView(FormView):
 class IndexView(View):
     def get(self,request,*args,**kwargs):
         allcourses=Course.objects.all()
+        purchased_courses=Order.objects.filter(student=request.user).values_list("course_objects",flat=True)
+        print(purchased_courses)
 
-        return render(request,"index.html",{"courses":allcourses})
+        return render(request,"index.html",{"courses":allcourses,"purchased_courses":purchased_courses})
 
 
 
@@ -120,3 +122,30 @@ class MyCoursesView(View):
     def get(self,request,*args,**kwargs):
         qs=request.user.purchase.all()
         return render(request,"mycourses.html",{"orders":qs})
+    
+
+
+
+
+
+class LessonDetailView(View):
+    def get(self,request,*args,**kwargs):
+
+
+# localhost:8000//student/courses/1/watch?module=1&lesson=5/  (requried url)
+
+        course_id=kwargs.get("pk")
+        course_instance=Lesson.objects.get(id=course_id)
+        
+        # request.GET = {"module":1,"lesson":5}
+
+        module_id= request.GET.get("module") if "module" in request.GET else 1
+        lesson_id= request.GET.get("lesson") if "lesson" in request.GET else 1
+
+        print(module_id,"&&&&&&&&&&&&&&&&&&&&")
+        print(lesson_id,"$$$$$$$$$")
+
+        module_instance = Module.objects.get(id=module_id,course_object=course_instance)
+        lesson_instance=Lesson.objects.get(id=lesson_id,module_object=module_instance)
+
+        return render(request,"lesson_detail.html",{"course":course_instance,"lesson":lesson_instance})
